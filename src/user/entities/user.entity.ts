@@ -11,4 +11,10 @@ export class UserEntity extends TimestampEntity {
 
   @Column({ type: 'varchar', length: 255, nullable: false, select: false })
   password: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: false })
+  firstName: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: false })
+  lastName: string;
 }
