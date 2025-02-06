@@ -12,27 +12,32 @@ export class ReservationController {
   constructor(private readonly reservationService: ReservationService) {}
 
   @ApiBody({ type: CreateReservationDto })
+  // All roles can create
   @Post()
   create(@Body() createReservationDto: CreateReservationDto) {
     return this.reservationService.create(createReservationDto);
   }
 
+  // All roles can findAll
   @Get()
   findAll() {
     return this.reservationService.findAll();
   }
 
+  // All roles can findOne
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.reservationService.findOneById(+id);
   }
 
   @ApiBody({ type: UpdateReservationDto })
+  // All roles can update
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateReservationDto: UpdateReservationDto) {
     return this.reservationService.update(+id, updateReservationDto);
   }
 
+  // All roles can delete
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.reservationService.remove(+id);
