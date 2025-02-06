@@ -17,4 +17,7 @@ export class UserEntity extends TimestampEntity {
 
   @Column({ type: 'varchar', length: 255, nullable: false })
   lastName: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: false, default: ['user'] })
+  roles: string[];
 }
