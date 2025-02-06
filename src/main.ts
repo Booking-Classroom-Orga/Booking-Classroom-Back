@@ -8,10 +8,9 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()
-    .setTitle('TODO API nestjs')
-    .setDescription('The tasks API description')
+    .setTitle('Booking Classroom API')
+    .setDescription('API created with NestJs')
     .setVersion('1.0')
-    .addTag('tasks')
     .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
