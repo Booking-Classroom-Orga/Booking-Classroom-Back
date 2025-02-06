@@ -1,0 +1,18 @@
+import { ApiProperty } from '@nestjs/swagger';
+
+export class CreateClassroomDto {
+  @ApiProperty({
+    default: 'Classroom test from Swagger',
+  })
+  name: string;
+
+  @ApiProperty({
+    default: 16,
+  })
+  capacity: number;
+
+  @ApiProperty({
+    default: ['Equipment 1 test', 'Equipment 2 test'],
+  })
+  equipment: object;
+}
