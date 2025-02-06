@@ -21,13 +21,13 @@ export class ClassroomController {
     return this.classroomService.create(createClassroomDto);
   }
 
-  // All roles can findAll
+  @Roles(Role.User)
   @Get()
   findAll() {
     return this.classroomService.findAll();
   }
 
-  // All roles can findOne
+  @Roles(Role.User)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.classroomService.findOneById(+id);

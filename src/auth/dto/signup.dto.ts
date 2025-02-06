@@ -12,4 +12,7 @@ export class SignupDto {
 
   @ApiProperty({ default: 'Doe' })
   lastName: string;
+
+  @ApiProperty({ default: ['user'] })
+  roles: string[];
 }
