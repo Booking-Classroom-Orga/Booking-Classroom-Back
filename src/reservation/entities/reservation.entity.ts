@@ -8,14 +8,11 @@ export class ReservationEntity extends TimestampEntity {
   id: number;
 
   @Column({ type: 'timestamp', nullable: true })
-  date: Date;
+  startTime: Date;
 
-  @Column({ type: 'time', nullable: true })
-  startTime: string;
+  @Column({ type: 'timestamp', nullable: true })
+  endTime: Date;
 
-  @Column({ type: 'time', nullable: true })
-  endTime: string;
-
-  @ManyToOne(() => ClassroomEntity, (classroom) => classroom.reservations)
+  @ManyToOne(() => ClassroomEntity, (classroom) => classroom.id)
   classroom: ClassroomEntity;
 }
