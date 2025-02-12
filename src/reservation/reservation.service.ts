@@ -5,6 +5,8 @@ import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { ReservationEntity } from './entities/reservation.entity';
 import { ClassroomEntity } from '../classroom/entities/classroom.entity';
+import { MailService } from '../mail/mail.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class ReservationService {
@@ -13,6 +15,8 @@ export class ReservationService {
     private readonly reservationRepository: Repository<ReservationEntity>,
     @InjectRepository(ClassroomEntity)
     private readonly classroomRepository: Repository<ClassroomEntity>,
+    private readonly mailService: MailService,
+    private readonly userService: UserService,
   ) {}
 
   async create(createReservationDto: CreateReservationDto): Promise<ReservationEntity> {
@@ -30,7 +34,17 @@ export class ReservationService {
       classroom,
     });
 
-    return this.reservationRepository.save(reservation);
+    const savedReservation = await this.reservationRepository.save(reservation);
+
+    const user = await this.userService.findOneById(createReservationDto.userId);
+
+    await this.mailService.sendMail(
+      user.email,
+      'Your reservation for a classroom',
+      `Your reservation for classroom ${classroom.name} has been created from ${createReservationDto.startTime} to ${createReservationDto.endTime}.`,
+    );
+
+    return savedReservation;
   }
 
   private async validateReservation(
