@@ -1,6 +1,5 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { TimestampEntity } from '../../generic/timestamp.entity';
-import { ReservationEntity } from '../../reservation/entities/reservation.entity';
 
 @Entity('classrooms')
 export class ClassroomEntity extends TimestampEntity {
@@ -18,7 +17,4 @@ export class ClassroomEntity extends TimestampEntity {
 
   @Column({ type: 'boolean', nullable: true, default: true })
   isAvailable: boolean;
-
-  @OneToMany(() => ReservationEntity, (reservation) => reservation.classroom)
-  reservations: ReservationEntity[];
 }

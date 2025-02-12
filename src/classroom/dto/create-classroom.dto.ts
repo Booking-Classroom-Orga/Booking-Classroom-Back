@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ReservationEntity } from '../../reservation/entities/reservation.entity';
 
 export class CreateClassroomDto {
   @ApiProperty({
@@ -21,9 +20,4 @@ export class CreateClassroomDto {
     default: true,
   })
   isAvailable: boolean;
-
-  @ApiProperty({
-    default: [],
-  })
-  reservations: ReservationEntity[];
 }
