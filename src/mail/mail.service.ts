@@ -29,7 +29,7 @@ export class MailService {
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6;">
           <h2>${subject}</h2>
-          <p>${text}</p>
+          <p>${text.replace(/\n/g, '<br>')}</p>
           <p>Thank you for using our service!</p>
         </div>
       `,

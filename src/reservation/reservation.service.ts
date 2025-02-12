@@ -145,16 +145,32 @@ export class ReservationService {
       throw new NotFoundException(`Reservation with ID ${id} not found`);
     }
 
-    await this.mailService.sendMail(
-      user.email,
-      'Your reservation has been updated',
-      `Your reservation for classroom ${classroom.name} has been updated.\n\nOld Reservation:\nStart Time: ${oldReservation.startTime}\nEnd Time: ${oldReservation.endTime}\n\nNew Reservation:\nStart Time: ${updateReservationDto.startTime}\nEnd Time: ${updateReservationDto.endTime}.`,
-    );
+    const userEmailText = `
+    Your reservation for classroom <strong>${classroom.name}</strong> has been updated.<br><br>
+    <strong>Old Reservation:</strong><br>
+    Start Time: <i>${oldReservation.startTime}</i><br>
+    End Time: <i>${oldReservation.endTime}</i><br><br>
+    <strong>New Reservation:</strong><br>
+    Start Time: <i>${updateReservationDto.startTime}</i><br>
+    End Time: <i>${updateReservationDto.endTime}</i>
+  `;
+
+    const adminEmailText = `
+    The reservation for user <strong>${user.email}</strong> in classroom <strong>${classroom.name}</strong> has been updated.<br><br>
+    <strong>Old Reservation:</strong><br>
+    Start Time: <i>${oldReservation.startTime}</i><br>
+    End Time: <i>${oldReservation.endTime}</i><br><br>
+    <strong>New Reservation:</strong><br>
+    Start Time: <i>${updateReservationDto.startTime}</i><br>
+    End Time: <i>${updateReservationDto.endTime}</i>
+  `;
+
+    await this.mailService.sendMail(user.email, 'Your reservation has been updated', userEmailText);
 
     await this.mailService.sendMail(
       process.env.MAIL_USER,
       'A reservation has been updated',
-      `The reservation for user ${user.email} in classroom ${classroom.name} has been updated.\n\nOld Reservation:\nStart Time: ${oldReservation.startTime}\nEnd Time: ${oldReservation.endTime}\n\nNew Reservation:\nStart Time: ${updateReservationDto.startTime}\nEnd Time: ${updateReservationDto.endTime}.`,
+      adminEmailText,
     );
 
     return this.reservationRepository.save(reservation);
