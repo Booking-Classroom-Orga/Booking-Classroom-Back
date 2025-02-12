@@ -16,6 +16,9 @@ export class ClassroomEntity extends TimestampEntity {
   @Column({ type: 'json', nullable: true })
   equipment: object;
 
+  @Column({ type: 'boolean', nullable: true, default: true })
+  isAvailable: boolean;
+
   @OneToMany(() => ReservationEntity, (reservation) => reservation.classroom)
   reservations: ReservationEntity[];
 }
