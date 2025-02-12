@@ -125,14 +125,33 @@ export class ReservationService {
       throw new NotFoundException('Classroom not found');
     }
 
+    const oldReservation = await this.findOneById(id);
+
     await this.validateReservation(updateReservationDto as CreateReservationDto, classroom);
 
-    await this.reservationRepository.update(id, {
+    const user = await this.userService.findOneById(updateReservationDto.userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const reservation = await this.reservationRepository.preload({
+      id,
       ...updateReservationDto,
       classroom,
+      user,
     });
 
-    return this.findOneById(id);
+    if (!reservation) {
+      throw new NotFoundException(`Reservation with ID ${id} not found`);
+    }
+
+    await this.mailService.sendMail(
+      user.email,
+      'Your reservation has been updated',
+      `Your reservation for classroom ${classroom.name} has been updated.\n\nOld Reservation:\nStart Time: ${oldReservation.startTime}\nEnd Time: ${oldReservation.endTime}\n\nNew Reservation:\nStart Time: ${updateReservationDto.startTime}\nEnd Time: ${updateReservationDto.endTime}.`,
+    );
+
+    return this.reservationRepository.save(reservation);
   }
 
   async remove(id: number): Promise<any> {
