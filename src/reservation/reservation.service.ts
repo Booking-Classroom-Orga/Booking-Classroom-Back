@@ -151,6 +151,12 @@ export class ReservationService {
       `Your reservation for classroom ${classroom.name} has been updated.\n\nOld Reservation:\nStart Time: ${oldReservation.startTime}\nEnd Time: ${oldReservation.endTime}\n\nNew Reservation:\nStart Time: ${updateReservationDto.startTime}\nEnd Time: ${updateReservationDto.endTime}.`,
     );
 
+    await this.mailService.sendMail(
+      process.env.MAIL_USER,
+      'A reservation has been updated',
+      `The reservation for user ${user.email} in classroom ${classroom.name} has been updated.\n\nOld Reservation:\nStart Time: ${oldReservation.startTime}\nEnd Time: ${oldReservation.endTime}\n\nNew Reservation:\nStart Time: ${updateReservationDto.startTime}\nEnd Time: ${updateReservationDto.endTime}.`,
+    );
+
     return this.reservationRepository.save(reservation);
   }
 
