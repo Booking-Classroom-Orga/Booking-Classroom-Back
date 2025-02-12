@@ -14,4 +14,7 @@ export class ClassroomEntity extends TimestampEntity {
 
   @Column({ type: 'json', nullable: true })
   equipment: object;
+
+  @Column({ type: 'boolean', nullable: true, default: true })
+  isAvailable: boolean;
 }
