@@ -1,25 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ClassroomEntity } from '../../classroom/entities/classroom.entity';
 
 export class CreateReservationDto {
   @ApiProperty()
   userId: number;
 
-  @ApiProperty({
-    default: () => 'CURRENT_DATE',
-  })
-  date: Date;
+  @ApiProperty()
+  startTime: Date;
 
-  @ApiProperty({
-    default: () => 'CURRENT_TIME',
-  })
-  startTime: string;
+  @ApiProperty()
+  endTime: Date;
 
-  @ApiProperty({
-    default: () => 'CURRENT_TIME',
-  })
-  endTime: string;
-
-  @ApiProperty({})
-  classroom: ClassroomEntity;
+  @ApiProperty({ default: 1 })
+  classroom: number;
 }

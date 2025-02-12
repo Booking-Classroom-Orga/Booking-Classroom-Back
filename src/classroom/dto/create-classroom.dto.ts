@@ -18,6 +18,11 @@ export class CreateClassroomDto {
   equipment: object;
 
   @ApiProperty({
+    default: true,
+  })
+  isAvailable: boolean;
+
+  @ApiProperty({
     default: [],
   })
   reservations: ReservationEntity[];

@@ -35,6 +35,14 @@ export class ClassroomService {
     return classroom;
   }
 
+  async findByAvailability(isAvailable: boolean): Promise<ClassroomEntity[]> {
+    const classroom = await this.classroomRepository.find({ where: { isAvailable } });
+    if (!classroom) {
+      throw new NotFoundException('Classroom not found');
+    }
+    return classroom;
+  }
+
   async update(
     id: number,
     updateClassroomDto: UpdateClassroomDto,
