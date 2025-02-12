@@ -89,6 +89,19 @@ export class ReservationService {
     return reservation;
   }
 
+  async findByUser(userId: number): Promise<ReservationEntity[]> {
+    const reservation = await this.reservationRepository
+      .createQueryBuilder('reservation')
+      .where('reservation.userId = :userId', { userId })
+      .getMany();
+
+    if (!reservation) {
+      throw new NotFoundException('User not found');
+    }
+
+    return reservation;
+  }
+
   async update(id: number, updateReservationDto: UpdateReservationDto): Promise<ReservationEntity> {
     const classroom = await this.classroomRepository.findOne({
       where: { id: updateReservationDto.classroom },

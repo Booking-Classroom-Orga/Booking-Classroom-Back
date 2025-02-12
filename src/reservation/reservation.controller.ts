@@ -32,6 +32,12 @@ export class ReservationController {
     return this.reservationService.findOneById(+id);
   }
 
+  @Roles(Role.User)
+  @Get('user/:id')
+  findByUser(@Param('id') id: string) {
+    return this.reservationService.findByUser(+id);
+  }
+
   @ApiBody({ type: UpdateReservationDto })
   @Roles(Role.User)
   @Patch(':id')
