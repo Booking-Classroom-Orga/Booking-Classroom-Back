@@ -33,6 +33,13 @@ export class ClassroomController {
     return this.classroomService.findOneById(+id);
   }
 
+  @Roles(Role.User)
+  @Get('availability/:isAvailable')
+  async findByAvailability(@Param('isAvailable') isAvailable: string) {
+    const isAvailableBool = isAvailable === 'true';
+    return this.classroomService.findByAvailability(isAvailableBool);
+  }
+
   @ApiBody({ type: UpdateClassroomDto })
   @Roles(Role.Admin)
   @Patch(':id')
