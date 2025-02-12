@@ -29,14 +29,15 @@ export class ReservationService {
 
     await this.validateReservation(createReservationDto, classroom);
 
+    const user = await this.userService.findOneById(createReservationDto.userId);
+
     const reservation = this.reservationRepository.create({
       ...createReservationDto,
       classroom,
+      user,
     });
 
     const savedReservation = await this.reservationRepository.save(reservation);
-
-    const user = await this.userService.findOneById(createReservationDto.userId);
 
     await this.mailService.sendMail(
       user.email,
