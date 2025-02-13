@@ -5,6 +5,8 @@ import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { ReservationEntity } from './entities/reservation.entity';
 import { ClassroomEntity } from '../classroom/entities/classroom.entity';
+import { MailService } from '../mail/mail.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class ReservationService {
@@ -13,6 +15,8 @@ export class ReservationService {
     private readonly reservationRepository: Repository<ReservationEntity>,
     @InjectRepository(ClassroomEntity)
     private readonly classroomRepository: Repository<ClassroomEntity>,
+    private readonly mailService: MailService,
+    private readonly userService: UserService,
   ) {}
 
   async create(createReservationDto: CreateReservationDto): Promise<ReservationEntity> {
@@ -25,12 +29,23 @@ export class ReservationService {
 
     await this.validateReservation(createReservationDto, classroom);
 
+    const user = await this.userService.findOneById(createReservationDto.userId);
+
     const reservation = this.reservationRepository.create({
       ...createReservationDto,
       classroom,
+      user,
     });
 
-    return this.reservationRepository.save(reservation);
+    const savedReservation = await this.reservationRepository.save(reservation);
+
+    await this.mailService.sendMail(
+      user.email,
+      'Your reservation for a classroom',
+      `Your reservation for classroom ${classroom.name} has been created from ${createReservationDto.startTime} to ${createReservationDto.endTime}.`,
+    );
+
+    return savedReservation;
   }
 
   private async validateReservation(
@@ -110,14 +125,55 @@ export class ReservationService {
       throw new NotFoundException('Classroom not found');
     }
 
+    const oldReservation = await this.findOneById(id);
+
     await this.validateReservation(updateReservationDto as CreateReservationDto, classroom);
 
-    await this.reservationRepository.update(id, {
+    const user = await this.userService.findOneById(updateReservationDto.userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const reservation = await this.reservationRepository.preload({
+      id,
       ...updateReservationDto,
       classroom,
+      user,
     });
 
-    return this.findOneById(id);
+    if (!reservation) {
+      throw new NotFoundException(`Reservation with ID ${id} not found`);
+    }
+
+    const userEmailText = `
+    Your reservation for classroom <strong>${classroom.name}</strong> has been updated.<br><br>
+    <strong>Old Reservation:</strong><br>
+    Start Time: <i>${oldReservation.startTime}</i><br>
+    End Time: <i>${oldReservation.endTime}</i><br><br>
+    <strong>New Reservation:</strong><br>
+    Start Time: <i>${updateReservationDto.startTime}</i><br>
+    End Time: <i>${updateReservationDto.endTime}</i>
+  `;
+
+    const adminEmailText = `
+    The reservation for user <strong>${user.email}</strong> in classroom <strong>${classroom.name}</strong> has been updated.<br><br>
+    <strong>Old Reservation:</strong><br>
+    Start Time: <i>${oldReservation.startTime}</i><br>
+    End Time: <i>${oldReservation.endTime}</i><br><br>
+    <strong>New Reservation:</strong><br>
+    Start Time: <i>${updateReservationDto.startTime}</i><br>
+    End Time: <i>${updateReservationDto.endTime}</i>
+  `;
+
+    await this.mailService.sendMail(user.email, 'Your reservation has been updated', userEmailText);
+
+    await this.mailService.sendMail(
+      process.env.MAIL_USER,
+      'A reservation has been updated',
+      adminEmailText,
+    );
+
+    return this.reservationRepository.save(reservation);
   }
 
   async remove(id: number): Promise<any> {
