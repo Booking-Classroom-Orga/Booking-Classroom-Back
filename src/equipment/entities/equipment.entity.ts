@@ -9,6 +9,6 @@ export class EquipmentEntity extends TimestampEntity {
   @Column({ type: 'varchar', length: 255, nullable: false })
   name: string;
 
-  @Column({ type: 'number', nullable: false })
+  @Column({ type: 'integer', nullable: false })
   quantity: number;
 }
