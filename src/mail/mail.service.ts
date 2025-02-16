@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { SentMessageInfo, Options } from 'nodemailer/lib/smtp-transport';
+import { ClassroomEntity } from '../classroom/entities/classroom.entity';
+import { UserEntity } from '../user/entities/user.entity';
+import { ReservationEntity } from '../reservation/entities/reservation.entity';
 
 @Injectable()
 export class MailService {
@@ -36,5 +39,29 @@ export class MailService {
     });
 
     console.log('Email sent, infos: ', info);
+  }
+
+  async sendDeleteMail(
+    user: UserEntity,
+    admin: UserEntity | null,
+    classroom: ClassroomEntity,
+    oldReservation: ReservationEntity,
+  ) {
+    const userEmailText = `
+      Your reservation for classroom <strong>${classroom.name}</strong> has been deleted.<br><br>
+      <strong>Deleted Reservation:</strong><br>
+      Start Time: <i>${oldReservation.startTime}</i><br>
+      End Time: <i>${oldReservation.endTime}</i><br><br>
+    `;
+    const adminEmailText = `
+      The reservation for user <strong>${user.email}</strong> in classroom <strong>${classroom.name}</strong> has been deleted.<br><br>
+      <strong>Deleted Reservation:</strong><br>
+      Start Time: <i>${oldReservation.startTime}</i><br>
+      End Time: <i>${oldReservation.endTime}</i><br><br>
+    `;
+    if (admin) {
+      await this.sendMail(admin.email, 'Reservation deleted', adminEmailText);
+    }
+    await this.sendMail(user.email, 'Important: Your reservation has been deleted', userEmailText);
   }
 }
