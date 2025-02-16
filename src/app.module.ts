@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ClassroomModule } from './classroom/classroom.module';
 import { ReservationModule } from './reservation/reservation.module';
+import { EquipmentModule } from './equipment/equipment.module';
 import { MailModule } from './mail/mail.module';
 
 @Module({
@@ -29,6 +30,7 @@ import { MailModule } from './mail/mail.module';
     AuthModule,
     ClassroomModule,
     ReservationModule,
+    EquipmentModule,
     MailModule,
   ],
   controllers: [AppController],
