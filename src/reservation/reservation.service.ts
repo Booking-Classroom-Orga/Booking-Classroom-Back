@@ -7,6 +7,8 @@ import { ReservationEntity } from './entities/reservation.entity';
 import { ClassroomEntity } from '../classroom/entities/classroom.entity';
 import { MailService } from '../mail/mail.service';
 import { UserService } from '../user/user.service';
+import { DeleteReservationDto } from './dto/delete-reservation.dto';
+import { UserEntity } from '../user/entities/user.entity';
 
 @Injectable()
 export class ReservationService {
@@ -176,9 +178,37 @@ export class ReservationService {
     return this.reservationRepository.save(reservation);
   }
 
-  async remove(id: number): Promise<any> {
-    await this.findOneById(id);
+  async remove(
+    id: number,
+    deleteReservationDto: DeleteReservationDto,
+    admin: UserEntity | null,
+  ): Promise<any> {
+    {
+      const classroom = await this.classroomRepository.findOne({
+        where: { id: deleteReservationDto.classroom },
+      });
+      if (!classroom) {
+        throw new NotFoundException('Classroom not found');
+      }
 
-    return this.reservationRepository.softDelete(id);
+      const oldReservation = await this.findOneById(id);
+      if (!oldReservation) {
+        throw new NotFoundException('Old reservation not found');
+      }
+
+      const user = await this.userService.findOneById(deleteReservationDto.userId);
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      let adminWithDetails: UserEntity | null = null;
+      if (admin) {
+        adminWithDetails = await this.userService.findOneById(admin.id);
+      }
+
+      await this.mailService.sendDeleteMail(user, adminWithDetails, classroom, oldReservation);
+
+      return this.reservationRepository.softDelete(id);
+    }
   }
 }

@@ -6,6 +6,9 @@ import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { Roles } from '../decorator/role.decorator';
 import { Role } from '../enum/role.enum';
+import { User } from '../decorator/user.decorator';
+import { DeleteReservationDto } from './dto/delete-reservation.dto';
+import { UserEntity } from '../user/entities/user.entity';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard)
@@ -45,9 +48,15 @@ export class ReservationController {
     return this.reservationService.update(+id, updateReservationDto);
   }
 
+  @ApiBody({ type: DeleteReservationDto })
   @Roles(Role.User)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reservationService.remove(+id);
+  remove(
+    @Param('id') id: string,
+    @Body() deleteReservationDto: DeleteReservationDto,
+    @User() user: UserEntity,
+  ) {
+    const isAdmin = user.roles.includes(Role.Admin);
+    return this.reservationService.remove(+id, deleteReservationDto, isAdmin ? user : null);
   }
 }
