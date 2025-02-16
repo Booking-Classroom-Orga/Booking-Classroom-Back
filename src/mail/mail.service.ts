@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { SentMessageInfo, Options } from 'nodemailer/lib/smtp-transport';
+import { UserEntity } from '../user/entities/user.entity';
+import { ClassroomEntity } from '../classroom/entities/classroom.entity';
+import { ReservationEntity } from '../reservation/entities/reservation.entity';
+import { UpdateReservationDto } from '../reservation/dto/update-reservation.dto';
 
 @Injectable()
 export class MailService {
@@ -36,5 +40,39 @@ export class MailService {
     });
 
     console.log('Email sent, infos: ', info);
+  }
+
+  async sendUpdateEmails(
+    user: UserEntity,
+    admin: UserEntity | null,
+    classroom: ClassroomEntity,
+    oldReservation: ReservationEntity,
+    updateReservationDto: UpdateReservationDto,
+  ) {
+    const userEmailText = `
+      Your reservation for classroom <strong>${classroom.name}</strong> has been updated.<br><br>
+      <strong>Old Reservation:</strong><br>
+      Start Time: <i>${oldReservation.startTime}</i><br>
+      End Time: <i>${oldReservation.endTime}</i><br><br>
+      <strong>New Reservation:</strong><br>
+      Start Time: <i>${updateReservationDto.startTime}</i><br>
+      End Time: <i>${updateReservationDto.endTime}</i>
+    `;
+
+    const adminEmailText = `
+      The reservation for user <strong>${user.email}</strong> in classroom <strong>${classroom.name}</strong> has been updated.<br><br>
+      <strong>Old Reservation:</strong><br>
+      Start Time: <i>${oldReservation.startTime}</i><br>
+      End Time: <i>${oldReservation.endTime}</i><br><br>
+      <strong>New Reservation:</strong><br>
+      Start Time: <i>${updateReservationDto.startTime}</i><br>
+      End Time: <i>${updateReservationDto.endTime}</i>
+    `;
+
+    if (admin) {
+      await this.sendMail(admin.email, 'Reservation updated', adminEmailText);
+    }
+
+    await this.sendMail(user.email, 'Your reservation has been updated', userEmailText);
   }
 }

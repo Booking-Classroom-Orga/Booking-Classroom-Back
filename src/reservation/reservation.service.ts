@@ -7,6 +7,7 @@ import { ReservationEntity } from './entities/reservation.entity';
 import { ClassroomEntity } from '../classroom/entities/classroom.entity';
 import { MailService } from '../mail/mail.service';
 import { UserService } from '../user/user.service';
+import { UserEntity } from '../user/entities/user.entity';
 
 @Injectable()
 export class ReservationService {
@@ -117,7 +118,11 @@ export class ReservationService {
     return reservation;
   }
 
-  async update(id: number, updateReservationDto: UpdateReservationDto): Promise<ReservationEntity> {
+  async update(
+    id: number,
+    updateReservationDto: UpdateReservationDto,
+    admin: UserEntity | null,
+  ): Promise<ReservationEntity> {
     const classroom = await this.classroomRepository.findOne({
       where: { id: updateReservationDto.classroom },
     });
@@ -145,32 +150,17 @@ export class ReservationService {
       throw new NotFoundException(`Reservation with ID ${id} not found`);
     }
 
-    const userEmailText = `
-    Your reservation for classroom <strong>${classroom.name}</strong> has been updated.<br><br>
-    <strong>Old Reservation:</strong><br>
-    Start Time: <i>${oldReservation.startTime}</i><br>
-    End Time: <i>${oldReservation.endTime}</i><br><br>
-    <strong>New Reservation:</strong><br>
-    Start Time: <i>${updateReservationDto.startTime}</i><br>
-    End Time: <i>${updateReservationDto.endTime}</i>
-  `;
+    let adminWithDetails: UserEntity | null = null;
+    if (admin) {
+      adminWithDetails = await this.userService.findOneById(admin.id);
+    }
 
-    const adminEmailText = `
-    The reservation for user <strong>${user.email}</strong> in classroom <strong>${classroom.name}</strong> has been updated.<br><br>
-    <strong>Old Reservation:</strong><br>
-    Start Time: <i>${oldReservation.startTime}</i><br>
-    End Time: <i>${oldReservation.endTime}</i><br><br>
-    <strong>New Reservation:</strong><br>
-    Start Time: <i>${updateReservationDto.startTime}</i><br>
-    End Time: <i>${updateReservationDto.endTime}</i>
-  `;
-
-    await this.mailService.sendMail(user.email, 'Your reservation has been updated', userEmailText);
-
-    await this.mailService.sendMail(
-      process.env.MAIL_USER,
-      'A reservation has been updated',
-      adminEmailText,
+    await this.mailService.sendUpdateEmails(
+      user,
+      adminWithDetails,
+      classroom,
+      oldReservation,
+      updateReservationDto,
     );
 
     return this.reservationRepository.save(reservation);

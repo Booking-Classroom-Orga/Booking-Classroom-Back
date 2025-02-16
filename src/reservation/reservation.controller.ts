@@ -6,6 +6,8 @@ import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { Roles } from '../decorator/role.decorator';
 import { Role } from '../enum/role.enum';
+import { User } from '../decorator/user.decorator';
+import { UserEntity } from '../user/entities/user.entity';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard)
@@ -41,8 +43,13 @@ export class ReservationController {
   @ApiBody({ type: UpdateReservationDto })
   @Roles(Role.User)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateReservationDto: UpdateReservationDto) {
-    return this.reservationService.update(+id, updateReservationDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateReservationDto: UpdateReservationDto,
+    @User() user: UserEntity,
+  ) {
+    const isAdmin = user.roles.includes(Role.Admin);
+    return this.reservationService.update(+id, updateReservationDto, isAdmin ? user : null);
   }
 
   @Roles(Role.User)
