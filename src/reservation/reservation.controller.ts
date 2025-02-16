@@ -2,12 +2,12 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { ReservationService } from './reservation.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
+import { DeleteReservationDto } from './dto/delete-reservation.dto';
 import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { Roles } from '../decorator/role.decorator';
 import { Role } from '../enum/role.enum';
 import { User } from '../decorator/user.decorator';
-import { DeleteReservationDto } from './dto/delete-reservation.dto';
 import { UserEntity } from '../user/entities/user.entity';
 
 @ApiBearerAuth()
@@ -44,8 +44,13 @@ export class ReservationController {
   @ApiBody({ type: UpdateReservationDto })
   @Roles(Role.User)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateReservationDto: UpdateReservationDto) {
-    return this.reservationService.update(+id, updateReservationDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateReservationDto: UpdateReservationDto,
+    @User() user: UserEntity,
+  ) {
+    const isAdmin = user.roles.includes(Role.Admin);
+    return this.reservationService.update(+id, updateReservationDto, isAdmin ? user : null);
   }
 
   @ApiBody({ type: DeleteReservationDto })
