@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateReservationDto } from './dto/create-reservation.dto';
@@ -39,15 +44,17 @@ export class ReservationService {
       user,
     });
 
-    const savedReservation = await this.reservationRepository.save(reservation);
+    try {
+      await this.mailService.sendMail(
+        user.email,
+        'Your reservation for a classroom',
+        `Your reservation for classroom ${classroom.name} has been created from ${createReservationDto.startTime} to ${createReservationDto.endTime}.`,
+      );
+    } catch (error) {
+      throw new InternalServerErrorException("The mail couldn't be sent", error);
+    }
 
-    await this.mailService.sendMail(
-      user.email,
-      'Your reservation for a classroom',
-      `Your reservation for classroom ${classroom.name} has been created from ${createReservationDto.startTime} to ${createReservationDto.endTime}.`,
-    );
-
-    return savedReservation;
+    return await this.reservationRepository.save(reservation);
   }
 
   private async validateReservation(
@@ -156,13 +163,17 @@ export class ReservationService {
       adminWithDetails = await this.userService.findOneById(admin.id);
     }
 
-    await this.mailService.sendUpdateEmails(
-      user,
-      adminWithDetails,
-      classroom,
-      oldReservation,
-      updateReservationDto,
-    );
+    try {
+      await this.mailService.sendUpdateEmails(
+        user,
+        adminWithDetails,
+        classroom,
+        oldReservation,
+        updateReservationDto,
+      );
+    } catch (error) {
+      throw new InternalServerErrorException("The mail couldn't be send", error);
+    }
 
     return this.reservationRepository.save(reservation);
   }
@@ -195,7 +206,11 @@ export class ReservationService {
         adminWithDetails = await this.userService.findOneById(admin.id);
       }
 
-      await this.mailService.sendDeleteMail(user, adminWithDetails, classroom, oldReservation);
+      try {
+        await this.mailService.sendDeleteMail(user, adminWithDetails, classroom, oldReservation);
+      } catch (error) {
+        throw new InternalServerErrorException("The mail couldn't be send", error);
+      }
 
       return this.reservationRepository.softDelete(id);
     }
