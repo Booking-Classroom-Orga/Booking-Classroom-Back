@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { TimestampEntity } from '../../generic/timestamp.entity';
+import { EquipmentEntity } from '../../equipment/entities/equipment.entity';
 
 @Entity('classroom')
 export class ClassroomEntity extends TimestampEntity {
@@ -12,8 +13,9 @@ export class ClassroomEntity extends TimestampEntity {
   @Column({ type: 'integer', nullable: true })
   capacity: number;
 
-  @Column({ type: 'json', nullable: true })
-  equipment: object;
+  @ManyToMany(() => EquipmentEntity, (equipment) => equipment.classrooms)
+  @JoinTable()
+  equipment: EquipmentEntity[];
 
   @Column({ type: 'boolean', nullable: true, default: true })
   isAvailable: boolean;
