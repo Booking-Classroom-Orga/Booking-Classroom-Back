@@ -26,7 +26,7 @@ export class MailService {
   }
 
   async sendMail(to: string, subject: string, text: string) {
-    const info = await this.transporter.sendMail({
+    return await this.transporter.sendMail({
       from: `"No Reply" <${process.env.MAIL_FROM}>`,
       to,
       subject,
@@ -38,8 +38,21 @@ export class MailService {
         </div>
       `,
     });
+  }
 
-    console.log('Email sent, infos: ', info);
+  async sendCreateMail(
+    user: UserEntity,
+    classroom: ClassroomEntity,
+    reservation: ReservationEntity,
+  ) {
+    const userEmailText = `
+      Your reservation for classroom <strong>${classroom.name}</strong> has been created.<br><br>
+      <strong>Reservation Details:</strong><br>
+      Start Time: <i>${reservation.startTime}</i><br>
+      End Time: <i>${reservation.endTime}</i>
+    `;
+
+    await this.sendMail(user.email, 'Your reservation has been created', userEmailText);
   }
 
   async sendUpdateEmails(
