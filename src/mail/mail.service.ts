@@ -75,4 +75,28 @@ export class MailService {
 
     await this.sendMail(user.email, 'Your reservation has been updated', userEmailText);
   }
+  
+  async sendDeleteMail(
+    user: UserEntity,
+    admin: UserEntity | null,
+    classroom: ClassroomEntity,
+    oldReservation: ReservationEntity,
+  ) {
+    const userEmailText = `
+      Your reservation for classroom <strong>${classroom.name}</strong> has been deleted.<br><br>
+      <strong>Deleted Reservation:</strong><br>
+      Start Time: <i>${oldReservation.startTime}</i><br>
+      End Time: <i>${oldReservation.endTime}</i><br><br>
+    `;
+    const adminEmailText = `
+      The reservation for user <strong>${user.email}</strong> in classroom <strong>${classroom.name}</strong> has been deleted.<br><br>
+      <strong>Deleted Reservation:</strong><br>
+      Start Time: <i>${oldReservation.startTime}</i><br>
+      End Time: <i>${oldReservation.endTime}</i><br><br>
+    `;
+    if (admin) {
+      await this.sendMail(admin.email, 'Reservation deleted', adminEmailText);
+    }
+    await this.sendMail(user.email, 'Important: Your reservation has been deleted', userEmailText);
+  }
 }

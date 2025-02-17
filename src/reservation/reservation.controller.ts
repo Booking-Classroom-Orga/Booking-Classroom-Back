@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { ReservationService } from './reservation.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
+import { DeleteReservationDto } from './dto/delete-reservation.dto';
 import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { Roles } from '../decorator/role.decorator';
@@ -52,9 +53,15 @@ export class ReservationController {
     return this.reservationService.update(+id, updateReservationDto, isAdmin ? user : null);
   }
 
+  @ApiBody({ type: DeleteReservationDto })
   @Roles(Role.User)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reservationService.remove(+id);
+  remove(
+    @Param('id') id: string,
+    @Body() deleteReservationDto: DeleteReservationDto,
+    @User() user: UserEntity,
+  ) {
+    const isAdmin = user.roles.includes(Role.Admin);
+    return this.reservationService.remove(+id, deleteReservationDto, isAdmin ? user : null);
   }
 }
