@@ -75,7 +75,7 @@ export class MailService {
 
     await this.sendMail(user.email, 'Your reservation has been updated', userEmailText);
   }
-  
+
   async sendDeleteMail(
     user: UserEntity,
     admin: UserEntity | null,
