@@ -29,7 +29,7 @@ export class AuthService {
       roles: user.roles,
     };
 
-    const accessToken = await this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload);
 
     return { accessToken };
   }
