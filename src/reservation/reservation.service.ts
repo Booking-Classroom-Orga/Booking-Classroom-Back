@@ -28,7 +28,7 @@ export class ReservationService {
 
   async create(createReservationDto: CreateReservationDto): Promise<ReservationEntity> {
     const classroom = await this.classroomRepository.findOne({
-      where: { id: createReservationDto.classroom },
+      where: { id: createReservationDto.classroomId },
     });
     if (!classroom) {
       throw new NotFoundException('Classroom not found');
@@ -123,7 +123,7 @@ export class ReservationService {
     admin: UserEntity | null,
   ): Promise<ReservationEntity> {
     const classroom = await this.classroomRepository.findOne({
-      where: { id: updateReservationDto.classroom },
+      where: { id: updateReservationDto.classroomId },
     });
     if (!classroom) {
       throw new NotFoundException('Classroom not found');
@@ -176,7 +176,7 @@ export class ReservationService {
   ): Promise<any> {
     {
       const classroom = await this.classroomRepository.findOne({
-        where: { id: deleteReservationDto.classroom },
+        where: { id: deleteReservationDto.classroomId },
       });
       if (!classroom) {
         throw new NotFoundException('Classroom not found');
