@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { TimestampEntity } from '../../generic/timestamp.entity';
 
-@Entity('classrooms')
+@Entity('classroom')
 export class ClassroomEntity extends TimestampEntity {
   @PrimaryGeneratedColumn()
   id: number;
