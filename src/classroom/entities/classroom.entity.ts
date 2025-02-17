@@ -7,10 +7,10 @@ export class ClassroomEntity extends TimestampEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255, nullable: true, default: '' })
+  @Column({ type: 'varchar', length: 255, nullable: false })
   name: string;
 
-  @Column({ type: 'integer', nullable: true })
+  @Column({ type: 'integer', nullable: false })
   capacity: number;
 
   @ManyToMany(() => EquipmentEntity, (equipment) => equipment.classrooms)
