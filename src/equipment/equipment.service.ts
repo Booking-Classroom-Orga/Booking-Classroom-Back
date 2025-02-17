@@ -17,7 +17,10 @@ export class EquipmentService {
   }
 
   findAll(): Promise<EquipmentEntity[]> {
-    return this.equipmentRepository.createQueryBuilder().getMany();
+    return this.equipmentRepository
+      .createQueryBuilder('equipment')
+      .leftJoinAndSelect('equipment.classrooms', 'classrooms')
+      .getMany();
   }
 
   async findOneById(id: number): Promise<EquipmentEntity> {
@@ -44,6 +47,19 @@ export class EquipmentService {
     }
 
     return equipment;
+  }
+
+  async findManyById(ids: number[]): Promise<EquipmentEntity[]> {
+    const equipments = await this.equipmentRepository
+      .createQueryBuilder('equipment')
+      .where('equipment.id IN (:...ids)', { ids })
+      .getMany();
+
+    if (!equipments.length) {
+      throw new NotFoundException('One or many equipment(s) not found');
+    }
+
+    return equipments;
   }
 
   async update(id: number, updateEquipmentDto: UpdateEquipmentDto): Promise<any> {

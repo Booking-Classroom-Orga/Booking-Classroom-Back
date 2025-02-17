@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  ParseArrayPipe,
+} from '@nestjs/common';
 import { EquipmentService } from './equipment.service';
 import { CreateEquipmentDto } from './dto/create-equipment.dto';
 import { UpdateEquipmentDto } from './dto/update-equipment.dto';
@@ -28,7 +38,13 @@ export class EquipmentController {
   }
 
   @Roles(Role.User)
-  @Get(':name')
+  @Get(':id')
+  findManyById(@Param('id', new ParseArrayPipe({ items: Number, separator: ',' })) id: number[]) {
+    return this.equipmentService.findManyById(id);
+  }
+
+  @Roles(Role.User)
+  @Get('name/:name')
   findByName(@Param('name') name: string) {
     return this.equipmentService.findByName(name);
   }
