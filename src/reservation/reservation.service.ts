@@ -78,12 +78,7 @@ export class ReservationService {
     const conflictingReservation = reservations.find((reservation) => {
       const reservationStart = new Date(reservation.startTime);
       const reservationEnd = new Date(reservation.endTime);
-      console.log('reservation.start_datetime : ', newReservationStart, reservationStart);
-      console.log('reservation.end_datetime : ', newReservationEnd, reservationEnd);
-      return (
-        newReservationEnd > reservationStart && // New reservation ends after the existing one starts
-        newReservationStart < reservationEnd // New reservation starts before the existing one ends
-      );
+      return newReservationEnd > reservationStart && newReservationStart < reservationEnd;
     });
     if (conflictingReservation) {
       throw new ConflictException(
