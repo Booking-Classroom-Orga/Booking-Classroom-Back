@@ -28,7 +28,7 @@ export class ReservationService {
 
   async create(createReservationDto: CreateReservationDto): Promise<ReservationEntity> {
     const classroom = await this.classroomRepository.findOne({
-      where: { id: createReservationDto.classroom },
+      where: { id: createReservationDto.classroomId },
     });
     if (!classroom) {
       throw new NotFoundException('Classroom not found');
@@ -45,11 +45,7 @@ export class ReservationService {
     });
 
     try {
-      await this.mailService.sendMail(
-        user.email,
-        'Your reservation for a classroom',
-        `Your reservation for classroom ${classroom.name} has been created from ${createReservationDto.startTime} to ${createReservationDto.endTime}.`,
-      );
+      await this.mailService.sendCreateMail(user, classroom, reservation);
     } catch (error) {
       throw new InternalServerErrorException("The mail couldn't be sent", error);
     }
@@ -82,12 +78,7 @@ export class ReservationService {
     const conflictingReservation = reservations.find((reservation) => {
       const reservationStart = new Date(reservation.startTime);
       const reservationEnd = new Date(reservation.endTime);
-      console.log('reservation.start_datetime : ', newReservationStart, reservationStart);
-      console.log('reservation.end_datetime : ', newReservationEnd, reservationEnd);
-      return (
-        newReservationEnd > reservationStart && // New reservation ends after the existing one starts
-        newReservationStart < reservationEnd // New reservation starts before the existing one ends
-      );
+      return newReservationEnd > reservationStart && newReservationStart < reservationEnd;
     });
     if (conflictingReservation) {
       throw new ConflictException(
@@ -132,7 +123,7 @@ export class ReservationService {
     admin: UserEntity | null,
   ): Promise<ReservationEntity> {
     const classroom = await this.classroomRepository.findOne({
-      where: { id: updateReservationDto.classroom },
+      where: { id: updateReservationDto.classroomId },
     });
     if (!classroom) {
       throw new NotFoundException('Classroom not found');
@@ -185,7 +176,7 @@ export class ReservationService {
   ): Promise<any> {
     {
       const classroom = await this.classroomRepository.findOne({
-        where: { id: deleteReservationDto.classroom },
+        where: { id: deleteReservationDto.classroomId },
       });
       if (!classroom) {
         throw new NotFoundException('Classroom not found');

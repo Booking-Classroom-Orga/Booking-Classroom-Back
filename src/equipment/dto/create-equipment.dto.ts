@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateEquipmentDto {
-  @ApiProperty({ default: 'Equipment test from Swagger' })
+  @ApiProperty({ default: 'Test' })
   name: string;
 
   @ApiProperty({ default: 1 })
