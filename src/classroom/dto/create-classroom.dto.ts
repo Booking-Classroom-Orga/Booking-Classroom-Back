@@ -11,10 +11,8 @@ export class CreateClassroomDto {
   })
   capacity: number;
 
-  @ApiProperty({
-    default: ['Equipment 1 test', 'Equipment 2 test'],
-  })
-  equipment: object;
+  @ApiProperty()
+  equipmentId: number[];
 
   @ApiProperty({
     default: true,

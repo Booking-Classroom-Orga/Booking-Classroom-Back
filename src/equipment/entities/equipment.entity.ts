@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { TimestampEntity } from '../../generic/timestamp.entity';
+import { ClassroomEntity } from '../../classroom/entities/classroom.entity';
 
 @Entity('equipment')
 export class EquipmentEntity extends TimestampEntity {
@@ -11,4 +12,7 @@ export class EquipmentEntity extends TimestampEntity {
 
   @Column({ type: 'integer', nullable: false })
   quantity: number;
+
+  @ManyToMany(() => ClassroomEntity, (classroom) => classroom.equipment)
+  classrooms: ClassroomEntity[];
 }
