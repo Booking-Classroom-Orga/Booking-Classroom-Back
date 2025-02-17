@@ -45,11 +45,7 @@ export class ReservationService {
     });
 
     try {
-      await this.mailService.sendMail(
-        user.email,
-        'Your reservation for a classroom',
-        `Your reservation for classroom ${classroom.name} has been created from ${createReservationDto.startTime} to ${createReservationDto.endTime}.`,
-      );
+      await this.mailService.sendCreateMail(user, classroom, reservation);
     } catch (error) {
       throw new InternalServerErrorException("The mail couldn't be sent", error);
     }
