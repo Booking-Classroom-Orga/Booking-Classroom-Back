@@ -5,6 +5,7 @@ import { UserEntity } from '../user/entities/user.entity';
 import { ClassroomEntity } from '../classroom/entities/classroom.entity';
 import { ReservationEntity } from '../reservation/entities/reservation.entity';
 import { UpdateReservationDto } from '../reservation/dto/update-reservation.dto';
+import { format } from 'date-fns';
 
 @Injectable()
 export class MailService {
@@ -23,6 +24,10 @@ export class MailService {
         rejectUnauthorized: false,
       },
     });
+  }
+
+  private formatDate(date: Date): string {
+    return format(date, "EEEE dd MMMM 'at' HH:mm");
   }
 
   async sendMail(to: string, subject: string, text: string) {
@@ -48,8 +53,8 @@ export class MailService {
     const userEmailText = `
       Your reservation for classroom <strong>${classroom.name}</strong> has been created.<br><br>
       <strong>Reservation Details:</strong><br>
-      Start Time: <i>${reservation.startTime}</i><br>
-      End Time: <i>${reservation.endTime}</i>
+      Start Time: <i>${this.formatDate(reservation.startTime)}</i><br>
+      End Time: <i>${this.formatDate(reservation.endTime)}</i>
     `;
 
     await this.sendMail(user.email, 'Your reservation has been created', userEmailText);
@@ -65,21 +70,21 @@ export class MailService {
     const userEmailText = `
       Your reservation for classroom <strong>${classroom.name}</strong> has been updated.<br><br>
       <strong>Old Reservation:</strong><br>
-      Start Time: <i>${oldReservation.startTime}</i><br>
-      End Time: <i>${oldReservation.endTime}</i><br><br>
+      Start Time: <i>${this.formatDate(oldReservation.startTime)}</i><br>
+      End Time: <i>${this.formatDate(oldReservation.endTime)}</i><br><br>
       <strong>New Reservation:</strong><br>
-      Start Time: <i>${updateReservationDto.startTime}</i><br>
-      End Time: <i>${updateReservationDto.endTime}</i>
+      Start Time: <i>${this.formatDate(updateReservationDto.startTime)}</i><br>
+      End Time: <i>${this.formatDate(updateReservationDto.endTime)}</i>
     `;
 
     const adminEmailText = `
       The reservation for user <strong>${user.email}</strong> in classroom <strong>${classroom.name}</strong> has been updated.<br><br>
       <strong>Old Reservation:</strong><br>
-      Start Time: <i>${oldReservation.startTime}</i><br>
-      End Time: <i>${oldReservation.endTime}</i><br><br>
+      Start Time: <i>${this.formatDate(oldReservation.startTime)}</i><br>
+      End Time: <i>${this.formatDate(oldReservation.endTime)}</i><br><br>
       <strong>New Reservation:</strong><br>
-      Start Time: <i>${updateReservationDto.startTime}</i><br>
-      End Time: <i>${updateReservationDto.endTime}</i>
+      Start Time: <i>${this.formatDate(updateReservationDto.startTime)}</i><br>
+      End Time: <i>${this.formatDate(updateReservationDto.endTime)}</i>
     `;
 
     if (admin) {
@@ -98,14 +103,14 @@ export class MailService {
     const userEmailText = `
       Your reservation for classroom <strong>${classroom.name}</strong> has been deleted.<br><br>
       <strong>Deleted Reservation:</strong><br>
-      Start Time: <i>${oldReservation.startTime}</i><br>
-      End Time: <i>${oldReservation.endTime}</i><br><br>
+      Start Time: <i>${this.formatDate(oldReservation.startTime)}</i><br>
+      End Time: <i>${this.formatDate(oldReservation.endTime)}</i><br><br>
     `;
     const adminEmailText = `
       The reservation for user <strong>${user.email}</strong> in classroom <strong>${classroom.name}</strong> has been deleted.<br><br>
       <strong>Deleted Reservation:</strong><br>
-      Start Time: <i>${oldReservation.startTime}</i><br>
-      End Time: <i>${oldReservation.endTime}</i><br><br>
+      Start Time: <i>${this.formatDate(oldReservation.startTime)}</i><br>
+      End Time: <i>${this.formatDate(oldReservation.endTime)}</i><br><br>
     `;
     if (admin) {
       await this.sendMail(admin.email, 'Reservation deleted', adminEmailText);
