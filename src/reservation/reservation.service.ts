@@ -88,14 +88,14 @@ export class ReservationService {
   }
 
   findAll(): Promise<ReservationEntity[]> {
-    return this.reservationRepository.createQueryBuilder().getMany();
+    return this.reservationRepository.find({ relations: ['classroom'] });
   }
 
   async findOneById(id: number): Promise<ReservationEntity> {
-    const reservation = await this.reservationRepository
-      .createQueryBuilder('reservation')
-      .where('reservation.id = :id', { id })
-      .getOne();
+    const reservation = await this.reservationRepository.findOne({
+      where: { id },
+      relations: ['classroom'],
+    });
 
     if (!reservation) {
       throw new NotFoundException('Reservation not found');
