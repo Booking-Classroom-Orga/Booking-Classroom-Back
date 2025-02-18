@@ -88,13 +88,13 @@ export class ReservationService {
   }
 
   findAll(): Promise<ReservationEntity[]> {
-    return this.reservationRepository.find({ relations: ['classroom'] });
+    return this.reservationRepository.find({ relations: ['classroom', 'user'] });
   }
 
   async findOneById(id: number): Promise<ReservationEntity> {
     const reservation = await this.reservationRepository.findOne({
       where: { id },
-      relations: ['classroom'],
+      relations: ['classroom', 'user'],
     });
 
     if (!reservation) {
