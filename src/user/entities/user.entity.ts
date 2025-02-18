@@ -20,4 +20,7 @@ export class UserEntity extends TimestampEntity {
 
   @Column({ type: 'varchar', length: 255, nullable: false, default: ['user'] })
   roles: string[];
+
+  @Column({ type: 'varchar', length: 6, nullable: true })
+  verificationCode: string | null;
 }

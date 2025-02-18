@@ -112,4 +112,13 @@ export class MailService {
     }
     await this.sendMail(user.email, 'Important: Your reservation has been deleted', userEmailText);
   }
+
+  async sendVerificationMail(user: UserEntity, verificationCode: string) {
+    const userEmailText = `
+      Your verification code is: <strong>${verificationCode}</strong><br><br>
+      Please use this code to complete your login process.
+    `;
+
+    await this.sendMail(user.email, 'Your verification code', userEmailText);
+  }
 }
