@@ -1,99 +1,117 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Classroom Booking API 🎓
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Welcome to the **Classroom Booking API**! This project simplifies classroom reservation management for educational institutions, enabling seamless booking, equipment tracking, and automated notifications. 🚀
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## Table of Contents 📋
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- [About the Project](#about-the-project)
+- [Key Features](#key-features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Environment Configuration](#environment-configuration)
+- [Database Access](#database-access)
+- [API Documentation & Testing](#api-documentation--testing)
 
-## Project setup
+---
+
+## About the Project 🧠
+
+The Classroom Booking API streamlines the reservation process for classrooms, allowing users to book spaces, manage equipment, and receive email notifications. Designed for efficiency and security, it serves as a robust backend solution for educational institutions.
+
+---
+
+## Key Features ✨
+
+- **🚀 High Performance**: Optimized for fast response times and scalability.
+- **🔒 Robust Security**: Implements JWT authentication and data encryption.
+- **📧 Automated Email Notifications**: Confirmation and update emails for bookings.
+- **🛠️ Equipment Management**: Track and manage classroom equipment.
+- **📄 Swagger Documentation**: Interactive API testing and exploration.
+
+---
+
+## Prerequisites 📦
+
+- Node.js (v18+)
+- npm (v9+)
+- Docker & Docker Compose (for database setup)
+- PostgreSQL (via Docker or standalone)
+
+---
+
+## Installation 🛠️
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Booking-Classroom-Orga/Booking-Classroom-Back.git
+   cd Booking-Classroom-Back
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server**:
+   ```bash
+   npm run start:dev
+   ```
+
+---
+
+## Environment Configuration ⚙️
+
+Create a `.env` file at the project root using the provided `.env-example` template.
+
+> **Note**: Replace email credentials with your production SMTP details in a live environment.
+
+---
+
+## Database Access 🗃️
+
+The project includes a Docker setup for PostgreSQL and Adminer (a database management tool):
+
+1. **Start Docker services**:
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Access Adminer**:
+   - Visit `http://localhost:8080`
+   - Login with credentials from `.env`:
+      - System: **PostgreSQL**
+      - Server: **db** (Docker container name)
+      - Username: `postgres`
+      - Password: `postgres`
+      - Database: `booking-classroom-db`
+
+---
+
+## API Documentation & Testing 📚
+
+Explore and test API endpoints using the integrated Swagger UI:
+
+1. **Start the server** (if not already running):
+   ```bash
+   npm run start:dev
+   ```
+
+2. **Visit Swagger UI**:
+   - Go to `http://localhost:8000/api`
+   - Interact with endpoints directly from the browser.
+
+---
+
+## Stopping the Services 🛑
+
+To stop Docker containers:
 
 ```bash
-$ npm install
+docker-compose down
 ```
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+**Happy Booking!** 🎉

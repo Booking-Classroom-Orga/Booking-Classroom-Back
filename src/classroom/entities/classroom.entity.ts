@@ -1,19 +1,21 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { TimestampEntity } from '../../generic/timestamp.entity';
+import { EquipmentEntity } from '../../equipment/entities/equipment.entity';
 
-@Entity('classrooms')
+@Entity('classroom')
 export class ClassroomEntity extends TimestampEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255, nullable: true, default: '' })
+  @Column({ type: 'varchar', length: 255, nullable: false })
   name: string;
 
-  @Column({ type: 'integer', nullable: true })
+  @Column({ type: 'integer', nullable: false })
   capacity: number;
 
-  @Column({ type: 'json', nullable: true })
-  equipment: object;
+  @ManyToMany(() => EquipmentEntity, (equipment) => equipment.classrooms)
+  @JoinTable()
+  equipment: EquipmentEntity[];
 
   @Column({ type: 'boolean', nullable: true, default: true })
   isAvailable: boolean;

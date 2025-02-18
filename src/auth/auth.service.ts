@@ -1,9 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
-import { SignupDto } from './dto/signup.dto';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -13,16 +13,15 @@ export class AuthService {
   ) {}
 
   async login(loginDto: LoginDto) {
-    // Check if user exist
     const user = await this.userService.findOneByEmail(loginDto.email);
-    // Check if password is correct
-    const isPasswordCorrect = await bcrypt.compare(
-      loginDto.password,
-      user.password,
-    );
+    if (!user) {
+      throw new UnauthorizedException('Invalid email');
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(loginDto.password, user.password);
 
     if (!isPasswordCorrect) {
-      throw new UnauthorizedException('Invalid Credentials');
+      throw new UnauthorizedException('Invalid password');
     }
 
     const payload = {
@@ -30,17 +29,12 @@ export class AuthService {
       roles: user.roles,
     };
 
-    const accessToken = await this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload);
 
     return { accessToken };
   }
 
-  async signup(signupDto: SignupDto) {
-    // Crypt password
-    const password = await bcrypt.hash(signupDto.password, 10);
-    signupDto.password = password;
-
-    // Create user
-    return this.userService.create(signupDto);
+  async signup(createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
   }
 }

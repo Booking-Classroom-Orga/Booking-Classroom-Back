@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
+import * as bcrypt from 'bcrypt';
+import { Role } from '../enum/role.enum';
 
 @Injectable()
 export class UserService {
@@ -13,9 +15,9 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const user = await this.userRepository.save(createUserDto);
+    createUserDto.password = await bcrypt.hash(createUserDto.password, 10);
 
-    return user;
+    return await this.userRepository.save(createUserDto);
   }
 
   findAll(): Promise<UserEntity[]> {
@@ -47,6 +49,12 @@ export class UserService {
     }
 
     return user;
+  }
+
+  async isAdmin(id: number): Promise<boolean> {
+    const user = await this.findOneById(id);
+
+    return user.roles.includes(Role.Admin);
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<any> {

@@ -3,7 +3,7 @@ import { TimestampEntity } from '../../generic/timestamp.entity';
 import { ClassroomEntity } from '../../classroom/entities/classroom.entity';
 import { UserEntity } from '../../user/entities/user.entity';
 
-@Entity('reservations')
+@Entity('reservation')
 export class ReservationEntity extends TimestampEntity {
   @PrimaryGeneratedColumn()
   id: number;

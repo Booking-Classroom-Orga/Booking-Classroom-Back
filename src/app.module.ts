@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ClassroomModule } from './classroom/classroom.module';
 import { ReservationModule } from './reservation/reservation.module';
+import { EquipmentModule } from './equipment/equipment.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -28,8 +28,8 @@ import { ReservationModule } from './reservation/reservation.module';
     AuthModule,
     ClassroomModule,
     ReservationModule,
+    EquipmentModule,
+    MailModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

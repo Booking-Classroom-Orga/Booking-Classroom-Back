@@ -5,11 +5,11 @@ export class CreateReservationDto {
   userId: number;
 
   @ApiProperty()
+  classroomId: number;
+
+  @ApiProperty()
   startTime: Date;
 
   @ApiProperty()
   endTime: Date;
-
-  @ApiProperty({ default: 1 })
-  classroom: number;
 }

@@ -2,16 +2,23 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { ReservationService } from './reservation.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
+import { DeleteReservationDto } from './dto/delete-reservation.dto';
 import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { Roles } from '../decorator/role.decorator';
 import { Role } from '../enum/role.enum';
+import { User } from '../decorator/user.decorator';
+import { UserEntity } from '../user/entities/user.entity';
+import { UserService } from '../user/user.service';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard)
 @Controller('reservations')
 export class ReservationController {
-  constructor(private readonly reservationService: ReservationService) {}
+  constructor(
+    private readonly reservationService: ReservationService,
+    private readonly userService: UserService,
+  ) {}
 
   @ApiBody({ type: CreateReservationDto })
   @Roles(Role.User)
@@ -41,13 +48,24 @@ export class ReservationController {
   @ApiBody({ type: UpdateReservationDto })
   @Roles(Role.User)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateReservationDto: UpdateReservationDto) {
-    return this.reservationService.update(+id, updateReservationDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateReservationDto: UpdateReservationDto,
+    @User() user: UserEntity,
+  ) {
+    const isAdmin = await this.userService.isAdmin(+user.id);
+    return this.reservationService.update(+id, updateReservationDto, isAdmin ? user : null);
   }
 
+  @ApiBody({ type: DeleteReservationDto })
   @Roles(Role.User)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reservationService.remove(+id);
+  async remove(
+    @Param('id') id: string,
+    @Body() deleteReservationDto: DeleteReservationDto,
+    @User() user: UserEntity,
+  ) {
+    const isAdmin = await this.userService.isAdmin(+user.id);
+    return this.reservationService.remove(+id, deleteReservationDto, isAdmin ? user : null);
   }
 }
