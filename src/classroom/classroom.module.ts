@@ -6,9 +6,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from '../user/user.module';
 import { EquipmentService } from '../equipment/equipment.service';
 import { EquipmentEntity } from '../equipment/entities/equipment.entity';
+import { ReservationEntity } from '../reservation/entities/reservation.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ClassroomEntity, EquipmentEntity]), UserModule],
+  imports: [
+    TypeOrmModule.forFeature([ClassroomEntity, EquipmentEntity, ReservationEntity]),
+    UserModule,
+  ],
   controllers: [ClassroomController],
   providers: [ClassroomService, EquipmentService],
   exports: [ClassroomService],
