@@ -9,12 +9,16 @@ import { Roles } from '../decorator/role.decorator';
 import { Role } from '../enum/role.enum';
 import { User } from '../decorator/user.decorator';
 import { UserEntity } from '../user/entities/user.entity';
+import { UserService } from '../user/user.service';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard)
 @Controller('reservations')
 export class ReservationController {
-  constructor(private readonly reservationService: ReservationService) {}
+  constructor(
+    private readonly reservationService: ReservationService,
+    private readonly userService: UserService,
+  ) {}
 
   @ApiBody({ type: CreateReservationDto })
   @Roles(Role.User)
@@ -44,24 +48,24 @@ export class ReservationController {
   @ApiBody({ type: UpdateReservationDto })
   @Roles(Role.User)
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateReservationDto: UpdateReservationDto,
     @User() user: UserEntity,
   ) {
-    const isAdmin = user.roles.includes(Role.Admin);
+    const isAdmin = await this.userService.isAdmin(+user.id);
     return this.reservationService.update(+id, updateReservationDto, isAdmin ? user : null);
   }
 
   @ApiBody({ type: DeleteReservationDto })
   @Roles(Role.User)
   @Delete(':id')
-  remove(
+  async remove(
     @Param('id') id: string,
     @Body() deleteReservationDto: DeleteReservationDto,
     @User() user: UserEntity,
   ) {
-    const isAdmin = user.roles.includes(Role.Admin);
+    const isAdmin = await this.userService.isAdmin(+user.id);
     return this.reservationService.remove(+id, deleteReservationDto, isAdmin ? user : null);
   }
 }
