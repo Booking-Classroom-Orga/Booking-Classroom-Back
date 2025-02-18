@@ -33,6 +33,12 @@ export class UserController {
     return this.userService.findOneById(+id);
   }
 
+  @Get('isAdmin/:id')
+  @Roles(Role.Admin)
+  isAdmin(@Param('id') id: string) {
+    return this.userService.isAdmin(+id);
+  }
+
   @ApiBody({ type: UpdateUserDto })
   @Patch(':id')
   @Roles(Role.Admin)
