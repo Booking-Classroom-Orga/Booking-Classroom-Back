@@ -88,14 +88,14 @@ export class ReservationService {
   }
 
   findAll(): Promise<ReservationEntity[]> {
-    return this.reservationRepository.createQueryBuilder().getMany();
+    return this.reservationRepository.find({ relations: ['classroom', 'user'] });
   }
 
   async findOneById(id: number): Promise<ReservationEntity> {
-    const reservation = await this.reservationRepository
-      .createQueryBuilder('reservation')
-      .where('reservation.id = :id', { id })
-      .getOne();
+    const reservation = await this.reservationRepository.findOne({
+      where: { id },
+      relations: ['classroom', 'user'],
+    });
 
     if (!reservation) {
       throw new NotFoundException('Reservation not found');
@@ -149,21 +149,35 @@ export class ReservationService {
       throw new NotFoundException(`Reservation with ID ${id} not found`);
     }
 
-    let adminWithDetails: UserEntity | null = null;
-    if (admin) {
-      adminWithDetails = await this.userService.findOneById(admin.id);
-    }
+    if (admin && admin.id === user.id) {
+      try {
+        await this.mailService.sendUpdateEmails(
+          user,
+          null,
+          classroom,
+          oldReservation,
+          updateReservationDto,
+        );
+      } catch (error) {
+        throw new InternalServerErrorException("The mail couldn't be sent", error);
+      }
+    } else {
+      let adminWithDetails: UserEntity | null = null;
+      if (admin) {
+        adminWithDetails = await this.userService.findOneById(admin.id);
+      }
 
-    try {
-      await this.mailService.sendUpdateEmails(
-        user,
-        adminWithDetails,
-        classroom,
-        oldReservation,
-        updateReservationDto,
-      );
-    } catch (error) {
-      throw new InternalServerErrorException("The mail couldn't be send", error);
+      try {
+        await this.mailService.sendUpdateEmails(
+          user,
+          adminWithDetails,
+          classroom,
+          oldReservation,
+          updateReservationDto,
+        );
+      } catch (error) {
+        throw new InternalServerErrorException("The mail couldn't be sent", error);
+      }
     }
 
     return this.reservationRepository.save(reservation);
@@ -174,24 +188,30 @@ export class ReservationService {
     deleteReservationDto: DeleteReservationDto,
     admin: UserEntity | null,
   ): Promise<any> {
-    {
-      const classroom = await this.classroomRepository.findOne({
-        where: { id: deleteReservationDto.classroomId },
-      });
-      if (!classroom) {
-        throw new NotFoundException('Classroom not found');
-      }
+    const classroom = await this.classroomRepository.findOne({
+      where: { id: deleteReservationDto.classroomId },
+    });
+    if (!classroom) {
+      throw new NotFoundException('Classroom not found');
+    }
 
-      const oldReservation = await this.findOneById(id);
-      if (!oldReservation) {
-        throw new NotFoundException('Old reservation not found');
-      }
+    const oldReservation = await this.findOneById(id);
+    if (!oldReservation) {
+      throw new NotFoundException('Old reservation not found');
+    }
 
-      const user = await this.userService.findOneById(deleteReservationDto.userId);
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
+    const user = await this.userService.findOneById(deleteReservationDto.userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
+    if (admin && admin.id === user.id) {
+      try {
+        await this.mailService.sendDeleteMail(user, null, classroom, oldReservation);
+      } catch (error) {
+        throw new InternalServerErrorException("The mail couldn't be sent", error);
+      }
+    } else {
       let adminWithDetails: UserEntity | null = null;
       if (admin) {
         adminWithDetails = await this.userService.findOneById(admin.id);
@@ -200,10 +220,10 @@ export class ReservationService {
       try {
         await this.mailService.sendDeleteMail(user, adminWithDetails, classroom, oldReservation);
       } catch (error) {
-        throw new InternalServerErrorException("The mail couldn't be send", error);
+        throw new InternalServerErrorException("The mail couldn't be sent", error);
       }
-
-      return this.reservationRepository.softDelete(id);
     }
+
+    return this.reservationRepository.softDelete(id);
   }
 }

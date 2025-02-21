@@ -6,12 +6,15 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { Role } from '../enum/role.enum';
+import { ReservationEntity } from '../reservation/entities/reservation.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(ReservationEntity)
+    private readonly reservationRepository: Repository<ReservationEntity>,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -71,7 +74,13 @@ export class UserService {
   }
 
   async remove(id: number): Promise<any> {
-    await this.findOneById(id);
+    const user = await this.userRepository.findOne({ where: { id } });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    await this.reservationRepository.softDelete({ user });
 
     return this.userRepository.softDelete(id);
   }

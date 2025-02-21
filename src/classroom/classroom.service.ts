@@ -5,12 +5,15 @@ import { CreateClassroomDto } from './dto/create-classroom.dto';
 import { UpdateClassroomDto } from './dto/update-classroom.dto';
 import { ClassroomEntity } from './entities/classroom.entity';
 import { EquipmentService } from '../equipment/equipment.service';
+import { ReservationEntity } from '../reservation/entities/reservation.entity';
 
 @Injectable()
 export class ClassroomService {
   constructor(
     @InjectRepository(ClassroomEntity)
     private readonly classroomRepository: Repository<ClassroomEntity>,
+    @InjectRepository(ReservationEntity)
+    private readonly reservationRepository: Repository<ReservationEntity>,
     private readonly equipmentService: EquipmentService,
   ) {}
 
@@ -71,7 +74,13 @@ export class ClassroomService {
   }
 
   async remove(id: number): Promise<any> {
-    await this.findOneById(id);
+    const classroom = await this.classroomRepository.findOne({ where: { id } });
+
+    if (!classroom) {
+      throw new NotFoundException(`Classroom with ID ${id} not found`);
+    }
+
+    await this.reservationRepository.softDelete({ classroom });
 
     return this.classroomRepository.softDelete(id);
   }
